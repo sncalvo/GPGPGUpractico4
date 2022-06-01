@@ -1,0 +1,107 @@
+#include "cuda.h"
+
+#define M 256
+#define BLOCK_SIZE 256
+
+__device__ int modulo(int a, int b){
+	int r = a % b;
+	r = (r < 0) ? r + b : r;
+	return r;
+}
+
+__global__ void decrypt_kernel(int *d_message, int length)
+{
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (i < length)
+	{
+		d_message[i] = modulo(A_MMI_M * (d_message[i] - B), M);
+	}
+}
+
+__global__ void shared_count_occurences(int *d_message, int occurenses[M], int length)
+{
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	extern __shared__ int shared_occurenses[]; // blockDim * sizeof(int) bytes
+
+	if (i > length)
+	{
+		return;
+	}
+
+	int occurense_index = modulo(d_message[i], M);
+
+	atomicAdd(shared_occurenses[occurense_index], 1);
+
+	__syncthreads();
+
+    atomicAdd(occurenses[i], shared_occurenses[occurense_index]);
+}
+
+__global__ void count_occurences(int *d_message, int occurenses[M], int length)
+{
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (i < length)
+	{
+		occurenses[modulo(d_message[i], M)]++;
+		__syncthreads();
+	}
+}
+
+int main(int argc, char *argv[])
+{
+	int *h_message;
+	// int *d_message;
+	unsigned int size;
+
+	const char *fname;
+
+	if (argc < 2) {
+		printf("Debe ingresar el nombre del archivo\n");
+	} else {
+		fname = argv[1];
+	}
+
+	int length = get_text_length(fname);
+
+	size = length * sizeof(int);
+
+	// reservar memoria para el mensaje
+	h_message = (int *)malloc(size);
+
+	int *h_occurenses = (int *)malloc(M * sizeof(int));
+	
+	parte_2(length, size, h_message, h_occurenses);
+	
+	print_occurences(h_occurenses);
+	free(h_occurenses);
+
+	return 0;	
+}
+
+int parte_2(int length, unsigned int size, int *message, int *occurenses)
+{
+	int *d_message;
+	cudaMalloc((void**)&d_message, length * sizeof(int));
+	cudaMemcpy(d_message, message, length * sizeof(int), cudaMemcpyHostToDevice);
+
+	int *d_occurenses;
+	cudaMalloc((void**)&d_occurenses, M * sizeof(int));
+	cudaMemset(d_occurenses, 0, M * sizeof(int));
+    
+	dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE, 1);
+ 	dim3 grid_dim(size / BLOCK_SIZE, size / BLOCK_SIZE);
+
+	decrypt_kernel<<<grid_dim, block_dim>>>(d_message, length);
+	count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
+
+	cudaMemcpy(message, d_message, size, cudaMemcpyDeviceToHost);
+	cudaMemcpy(occurenses, d_occurenses, M * sizeof(int), cudaMemcpyDeviceToHost);
+
+	cudaFree(d_message);
+	cudaFree(d_occurenses);
+
+	return 0;
+}
