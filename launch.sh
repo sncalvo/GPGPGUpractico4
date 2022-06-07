@@ -7,7 +7,6 @@
 #SBATCH --partition=besteffort
 
 #SBATCH --qos=besteffort_gpu
-#SBATCH --qos=gpu
 
 #SBATCH --gres=gpu:1
 #SBATCH --mail-type=ALL
