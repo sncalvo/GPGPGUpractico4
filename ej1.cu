@@ -3,6 +3,13 @@
 #define M 256
 #define BLOCK_SIZE 256
 
+#define A 15
+#define B 27
+#define M 256
+#define A_MMI_M -17
+
+#define N 512
+
 __device__ int modulo(int a, int b){
 	int r = a % b;
 	r = (r < 0) ? r + b : r;
