@@ -10,6 +10,20 @@
 
 #define N 512
 
+#define CUDA_CHK(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess)
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+}
+
+void read_file(const char*, int*);
+int get_text_length(const char * fname);
+
 __device__ int modulo(int a, int b){
 	int r = a % b;
 	r = (r < 0) ? r + b : r;
@@ -57,6 +71,31 @@ __global__ void count_occurences(int *d_message, int occurenses[M], int length)
 	}
 }
 
+int parte_2(int length, unsigned int size, int *message, int *occurenses)
+{
+	int *d_message;
+	cudaMalloc((void**)&d_message, length * sizeof(int));
+	cudaMemcpy(d_message, message, length * sizeof(int), cudaMemcpyHostToDevice);
+
+	int *d_occurenses;
+	cudaMalloc((void**)&d_occurenses, M * sizeof(int));
+	cudaMemset(d_occurenses, 0, M * sizeof(int));
+    
+	dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE, 1);
+ 	dim3 grid_dim(size / BLOCK_SIZE, size / BLOCK_SIZE);
+
+	decrypt_kernel<<<grid_dim, block_dim>>>(d_message, length);
+	count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
+
+	cudaMemcpy(message, d_message, size, cudaMemcpyDeviceToHost);
+	cudaMemcpy(occurenses, d_occurenses, M * sizeof(int), cudaMemcpyDeviceToHost);
+
+	cudaFree(d_message);
+	cudaFree(d_occurenses);
+
+	return 0;
+}
+
 int main(int argc, char *argv[])
 {
 	int *h_message;
@@ -88,27 +127,37 @@ int main(int argc, char *argv[])
 	return 0;	
 }
 
-int parte_2(int length, unsigned int size, int *message, int *occurenses)
+int get_text_length(const char * fname)
 {
-	int *d_message;
-	cudaMalloc((void**)&d_message, length * sizeof(int));
-	cudaMemcpy(d_message, message, length * sizeof(int), cudaMemcpyHostToDevice);
+	FILE *f = NULL;
+	f = fopen(fname, "r"); //read and binary flags
 
-	int *d_occurenses;
-	cudaMalloc((void**)&d_occurenses, M * sizeof(int));
-	cudaMemset(d_occurenses, 0, M * sizeof(int));
-    
-	dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE, 1);
- 	dim3 grid_dim(size / BLOCK_SIZE, size / BLOCK_SIZE);
+	size_t pos = ftell(f);
+	fseek(f, 0, SEEK_END);
+	size_t length = ftell(f);
+	fseek(f, pos, SEEK_SET);
 
-	decrypt_kernel<<<grid_dim, block_dim>>>(d_message, length);
-	count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
+	fclose(f);
 
-	cudaMemcpy(message, d_message, size, cudaMemcpyDeviceToHost);
-	cudaMemcpy(occurenses, d_occurenses, M * sizeof(int), cudaMemcpyDeviceToHost);
+	return length;
+}
 
-	cudaFree(d_message);
-	cudaFree(d_occurenses);
+void read_file(const char * fname, int* input)
+{
+	// printf("leyendo archivo %s\n", fname );
 
-	return 0;
+	FILE *f = NULL;
+	f = fopen(fname, "r"); //read and binary flags
+	if (f == NULL) {
+		fprintf(stderr, "Error: Could not find %s file \n", fname);
+		exit(1);
+	}
+
+	//fread(input, 1, N, f);
+	int c;
+	while ((c = getc(f)) != EOF) {
+		*(input++) = c;
+	}
+
+	fclose(f);
 }
