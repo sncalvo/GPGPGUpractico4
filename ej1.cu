@@ -93,7 +93,8 @@ int parte_2(int length, unsigned int size, int *message, int *occurenses)
  	dim3 grid_dim(size / block_dim.x);
 
 	decrypt_kernel<<<grid_dim, block_dim>>>(d_message, length);
-	count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
+	// count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
+	shared_count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
 
 	cudaMemcpy(message, d_message, size, cudaMemcpyDeviceToHost);
 	cudaMemcpy(occurenses, d_occurenses, M * sizeof(int), cudaMemcpyDeviceToHost);
@@ -145,13 +146,9 @@ int main(int argc, char *argv[])
 	// leo el archivo de la entrada
 	read_file(fname, h_message);
 
-	print_message(h_message, length);
-
 	int *h_occurenses = (int *)malloc(M * sizeof(int));
 
 	parte_2(length, size, h_message, h_occurenses);
-
-	print_message(h_message, length);
 
 	print_occurences(h_occurenses);
 	free(h_occurenses);
