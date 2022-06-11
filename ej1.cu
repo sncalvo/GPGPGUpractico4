@@ -69,6 +69,8 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 		local_occurenses[char_index] += 1;
 	}
 
+	printf("DONE\n");
+
 	for (int j = 0; j < M; j++)
 	{
 		atomicAdd(&occurenses[j], local_occurenses[j]);
