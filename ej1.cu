@@ -96,6 +96,14 @@ int parte_2(int length, unsigned int size, int *message, int *occurenses)
 	return 0;
 }
 
+void print_occurences(int *occurenses)
+{
+	for (int i = 0; i < 256; i++)
+	{
+		printf("%d: %d\n", i, occurenses[i]);
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	int *h_message;
