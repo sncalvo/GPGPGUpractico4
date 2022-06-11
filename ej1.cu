@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 
 	print_message(h_message, length);
 
-	print_occurences(h_occurenses);
+	// print_occurences(h_occurenses);
 	free(h_occurenses);
 
 	return 0;
