@@ -69,10 +69,13 @@ __global__ void count_occurences(int *d_message, int occurenses[M], int length)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 
+	int occurense_index = modulo(d_message[i], M);
+
 	if (i < length)
 	{
-		occurenses[modulo(d_message[i], M)]++;
-		__syncthreads();
+		atomicAdd(&occurenses[occurense_index], 1);
+		// occurenses[modulo(d_message[i], M)]++;
+		// __syncthreads();
 	}
 }
 
@@ -111,7 +114,7 @@ void print_occurences(int *occurenses)
 
 void print_message(int *message, int length)
 {
-	for (int i = 0; i < 1024; i++)
+	for (int i = 0; i < 2048; i++)
 	{
 		printf("%c", (char)message[i]);
 	}
