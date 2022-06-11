@@ -52,7 +52,7 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 	int block = i * BLOCK_PROCESS_SIZE;
 
 	extern __shared__ int shared_message[]; // blockDim * sizeof(int) bytes
-	int local_occurenses[256]; // blockDim * sizeof(int) bytes
+	int local_occurenses[M]; // blockDim * sizeof(int) bytes
 
 	for (int j = 0; j < BLOCK_PROCESS_SIZE; j++)
 	{
@@ -60,13 +60,15 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 			break;
 		}
 
-		shared_message[threadIdx.x * BLOCK_PROCESS_SIZE + j] = d_message[block + j];
+		int index = threadIdx.x * BLOCK_PROCESS_SIZE + j;
+
+		shared_message[index] = d_message[block + j];
 		__syncwarp();
-		int occurense_index = modulo(shared_message[threadIdx.x * BLOCK_PROCESS_SIZE + j], M);
-		local_occurenses[occurense_index]++;
+		int char_index = modulo(shared_message[index], M);
+		local_occurenses[char_index] += 1;
 	}
 
-	for (int j = 0; j < 256; j++)
+	for (int j = 0; j < M; j++)
 	{
 		atomicAdd(&occurenses[j], local_occurenses[j]);
 		__syncthreads();
