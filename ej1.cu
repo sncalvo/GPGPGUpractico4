@@ -104,7 +104,7 @@ int parte_2(int length, unsigned int size, int *message, int *occurenses)
 
 	decrypt_kernel<<<grid_dim, block_dim>>>(d_message, length);
 	// count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
-	grid_dim = dim3(size / (block_dim.x * BLOCK_PROCESS_SIZE));
+	grid_dim = dim3(length / (block_dim.x * BLOCK_PROCESS_SIZE));
 	shared_count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * BLOCK_PROCESS_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
 
 	cudaMemcpy(message, d_message, size, cudaMemcpyDeviceToHost);
