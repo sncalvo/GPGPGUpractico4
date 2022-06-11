@@ -53,11 +53,11 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 
 	int occurense_index = modulo(d_message[i], M);
 
-	atomicAdd(shared_occurenses[occurense_index], 1);
+	atomicAdd(&shared_occurenses[occurense_index], 1);
 
 	__syncthreads();
 
-    atomicAdd(occurenses[i], shared_occurenses[occurense_index]);
+	atomicAdd(&occurenses[i], shared_occurenses[occurense_index]);
 }
 
 __global__ void count_occurences(int *d_message, int occurenses[M], int length)
@@ -80,7 +80,7 @@ int parte_2(int length, unsigned int size, int *message, int *occurenses)
 	int *d_occurenses;
 	cudaMalloc((void**)&d_occurenses, M * sizeof(int));
 	cudaMemset(d_occurenses, 0, M * sizeof(int));
-    
+
 	dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE, 1);
  	dim3 grid_dim(size / BLOCK_SIZE, size / BLOCK_SIZE);
 
@@ -118,13 +118,13 @@ int main(int argc, char *argv[])
 	h_message = (int *)malloc(size);
 
 	int *h_occurenses = (int *)malloc(M * sizeof(int));
-	
+
 	parte_2(length, size, h_message, h_occurenses);
-	
+
 	print_occurences(h_occurenses);
 	free(h_occurenses);
 
-	return 0;	
+	return 0;
 }
 
 int get_text_length(const char * fname)
