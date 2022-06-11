@@ -6,8 +6,8 @@
 #include "cuda.h"
 
 #define M 256
-#define BLOCK_SIZE 256
-#define BLOCK_PROCESS_SIZE 256
+#define BLOCK_SIZE 128
+#define BLOCK_PROCESS_SIZE 32
 
 #define A 15
 #define B 27
