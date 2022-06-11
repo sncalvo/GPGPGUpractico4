@@ -109,6 +109,15 @@ void print_occurences(int *occurenses)
 	}
 }
 
+void print_message(int *message, int length)
+{
+	for (int i = 0; i < length; i++)
+	{
+		printf("%c", (char)message[i]);
+	}
+	printf("\n");
+}
+
 int main(int argc, char *argv[])
 {
 	int *h_message;
@@ -133,6 +142,8 @@ int main(int argc, char *argv[])
 	int *h_occurenses = (int *)malloc(M * sizeof(int));
 
 	parte_2(length, size, h_message, h_occurenses);
+
+	print_message(h_message, length);
 
 	print_occurences(h_occurenses);
 	free(h_occurenses);
