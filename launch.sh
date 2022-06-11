@@ -18,6 +18,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
 
 nvcc ./ej1.cu -o ej1_sol
 
-./ej1_sol
+./ej1_sol secreto.txt
 # nvprof --metrics gld_efficiency,gst_efficiency ./ej1_sol
 # nvprof ./ej1_sol
