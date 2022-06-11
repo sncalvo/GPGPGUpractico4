@@ -109,6 +109,7 @@ int parte_2(int length, unsigned int size, int *message, int *occurenses)
 	// count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
 	grid_dim = dim3(length / (block_dim.x * BLOCK_PROCESS_SIZE));
 	shared_count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * BLOCK_PROCESS_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
+	CUDA_CHK(cudaGetLastError());
 
 	cudaMemcpy(message, d_message, size, cudaMemcpyDeviceToHost);
 	cudaMemcpy(occurenses, d_occurenses, M * sizeof(int), cudaMemcpyDeviceToHost);
