@@ -111,7 +111,7 @@ void print_occurences(int *occurenses)
 
 void print_message(int *message, int length)
 {
-	for (int i = 0; i < length; i++)
+	for (int i = 0; i < 256; i++)
 	{
 		printf("%c", (char)message[i]);
 	}
@@ -141,6 +141,8 @@ int main(int argc, char *argv[])
 
 	// leo el archivo de la entrada
 	read_file(fname, h_message);
+
+	print_message(h_message, length);
 
 	int *h_occurenses = (int *)malloc(M * sizeof(int));
 
