@@ -86,8 +86,8 @@ int parte_2(int length, unsigned int size, int *message, int *occurenses)
 	cudaMalloc((void**)&d_occurenses, M * sizeof(int));
 	cudaMemset(d_occurenses, 0, M * sizeof(int));
 
-	dim3 block_dim(BLOCK_SIZE, 1, 1);
- 	dim3 grid_dim(size / BLOCK_SIZE, 1);
+	int block_dim = BLOCK_SIZE
+ 	int grid_dim = (size + blockSize - 1) / blockSize;
 
 	decrypt_kernel<<<grid_dim, block_dim>>>(d_message, length);
 	count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
