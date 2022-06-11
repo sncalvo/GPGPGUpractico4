@@ -7,6 +7,7 @@
 
 #define M 256
 #define BLOCK_SIZE 1024
+#define BLOCK_PROCESS_SIZE 256
 
 #define A 15
 #define B 27
@@ -48,25 +49,28 @@ __global__ void decrypt_kernel(int *d_message, int length)
 __global__ void shared_count_occurences(int *d_message, int occurenses[M], int length)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	int block = i * BLOCK_PROCESS_SIZE;
 
-	extern __shared__ int shared_occurenses[]; // blockDim * sizeof(int) bytes
+	extern __shared__ int shared_message[]; // blockDim * sizeof(int) bytes
+	int local_occurenses[256]; // blockDim * sizeof(int) bytes
 
-	if (i >= length)
+	for (int j = 0; j < BLOCK_PROCESS_SIZE; j++)
 	{
-		return;
+		if (j >= length) {
+			break;
+		}
+
+		shared_message[threadIdx.x * BLOCK_PROCESS_SIZE + j] = d_message[block + j];
+		__syncwarp();
+		int occurense_index = modulo(shared_message[threadIdx.x * BLOCK_PROCESS_SIZE + j], M);
+		local_occurenses[occurense_index]++;
 	}
 
-	int occurense_index = modulo(d_message[i], M);
-
-	shared_occurenses[occurense_index] = occurenses[occurense_index];
-
-	__syncthreads();
-
-	atomicAdd(&shared_occurenses[occurense_index], 1);
-
-	__syncthreads();
-
-	atomicAdd(&occurenses[i], shared_occurenses[occurense_index]);
+	for (int j = 0; j < 256; j++)
+	{
+		atomicAdd(&occurenses[j], local_occurenses[j]);
+		__syncthread();
+	}
 }
 
 __global__ void count_occurences(int *d_message, int occurenses[M], int length)
@@ -98,7 +102,8 @@ int parte_2(int length, unsigned int size, int *message, int *occurenses)
 
 	decrypt_kernel<<<grid_dim, block_dim>>>(d_message, length);
 	// count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
-	shared_count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
+	grid_dim = dim3(size / (block_dim.x * BLOCK_PROCESS_SIZE));
+	shared_count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * BLOCK_PROCESS_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
 
 	cudaMemcpy(message, d_message, size, cudaMemcpyDeviceToHost);
 	cudaMemcpy(occurenses, d_occurenses, M * sizeof(int), cudaMemcpyDeviceToHost);
