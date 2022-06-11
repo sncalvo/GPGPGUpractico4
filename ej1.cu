@@ -69,7 +69,7 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 	for (int j = 0; j < 256; j++)
 	{
 		atomicAdd(&occurenses[j], local_occurenses[j]);
-		__syncthread();
+		__syncthreads();
 	}
 }
 
