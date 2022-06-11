@@ -6,7 +6,7 @@
 #include "cuda.h"
 
 #define M 256
-#define BLOCK_SIZE 1024
+#define BLOCK_SIZE 256
 #define BLOCK_PROCESS_SIZE 256
 
 #define A 15
@@ -51,7 +51,7 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int block = i * BLOCK_PROCESS_SIZE;
 
-	extern __shared__ int shared_message[]; // blockDim * sizeof(int) bytes
+	extern __shared__ int shared_message[]; // blockDim * BLOCK_PROCESS_SIZE * sizeof(int) bytes
 	int local_occurenses[M]; // blockDim * sizeof(int) bytes
 
 	for (int j = 0; j < BLOCK_PROCESS_SIZE; j++)
@@ -120,7 +120,10 @@ void print_occurences(int *occurenses)
 {
 	for (int i = 0; i < 256; i++)
 	{
-		printf("%d: %d\n", i, occurenses[i]);
+		if (occurenses[i] > 0)
+		{
+			printf("%d: %d\n", i, occurenses[i]);
+		}
 	}
 }
 
