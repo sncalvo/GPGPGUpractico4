@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <locale.h>
+
 #include "cuda.h"
 
 #define M 256
