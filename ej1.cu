@@ -51,12 +51,14 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 
 	extern __shared__ int shared_occurenses[]; // blockDim * sizeof(int) bytes
 
-	if (i > length)
+	if (i >= length)
 	{
 		return;
 	}
 
 	int occurense_index = modulo(d_message[i], M);
+
+	shared_occurenses[occurense_index] = occurenses[occurense_index];
 
 	atomicAdd(&shared_occurenses[occurense_index], 1);
 
