@@ -60,6 +60,8 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 
 	shared_occurenses[occurense_index] = occurenses[occurense_index];
 
+	__syncthreads();
+
 	atomicAdd(&shared_occurenses[occurense_index], 1);
 
 	__syncthreads();
