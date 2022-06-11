@@ -63,13 +63,10 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 		int index = threadIdx.x * BLOCK_PROCESS_SIZE + j;
 
 		shared_message[index] = d_message[block + j];
-		printf("%d", shared_message[index]);
 		__syncwarp();
 		int char_index = modulo(shared_message[index], M);
 		local_occurenses[char_index] += 1;
 	}
-
-	printf("DONE\n");
 
 	for (int j = 0; j < M; j++)
 	{
