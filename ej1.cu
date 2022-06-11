@@ -6,7 +6,7 @@
 #include "cuda.h"
 
 #define M 256
-#define BLOCK_SIZE 256
+#define BLOCK_SIZE 1024
 
 #define A 15
 #define B 27
@@ -138,6 +138,9 @@ int main(int argc, char *argv[])
 
 	// reservar memoria para el mensaje
 	h_message = (int *)malloc(size);
+
+	// leo el archivo de la entrada
+	read_file(fname, h_message);
 
 	int *h_occurenses = (int *)malloc(M * sizeof(int));
 
