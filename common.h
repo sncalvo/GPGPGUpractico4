@@ -16,8 +16,8 @@
 
 #define SQUARE_LENGTH 2 * PI
 #define SMALL_POINT_SIZE 0.001
-#define BIG_POINT_SIZE 1.0
-// #define BIG_POINT_SIZE 0.01
+// #define BIG_POINT_SIZE 0.1
+#define BIG_POINT_SIZE 0.01
 
 #define CUDA_CHK(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 
@@ -42,6 +42,7 @@ struct Point3D {
 };
 
 void print_matrix_of_points(Point2D *points, int n) {
+  printf("\n");
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
       printf("%f, %f ", points[i*n + j].x, points[i * n + j].y);
@@ -53,6 +54,8 @@ void print_matrix_of_points(Point2D *points, int n) {
 }
 
 void print_matrix_of_points(Point3D *points, int n) {
+  printf("\n");
+
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
       for (int k = 0; k < n; k++) {
@@ -66,6 +69,8 @@ void print_matrix_of_points(Point3D *points, int n) {
 }
 
 void print_matrix_of_points(double *points, int n) {
+  printf("\n");
+
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
       printf("%f ", points[i * n + j]);
@@ -74,7 +79,20 @@ void print_matrix_of_points(double *points, int n) {
   }
 }
 
+void print_matrix_of_points_with_origin(Point2D *origins, double *points, int n) {
+  // printf("\n");
+
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      printf("%f, %f\n", origins[i * n + j].x + origins[i * n + j].y, points[i * n + j]);
+    }
+    // printf("\n");
+  }
+}
+
 void print_matrix_of_points3D(double *points, int n) {
+  printf("\n");
+
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++) {
       for (int k = 0; k < n; k++) {
@@ -87,4 +105,4 @@ void print_matrix_of_points3D(double *points, int n) {
   printf("\n");
 }
 
-#endif COMMON_H
+#endif
