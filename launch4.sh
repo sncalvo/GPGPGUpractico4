@@ -11,13 +11,13 @@
 #SBATCH --gres=gpu:1
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=sncalvo5@gmail.com
-#SBATCH -o salida1.out
+#SBATCH -o salida4.out
 
 export PATH=$PATH:/usr/local/cuda/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
 
-nvcc ./ej1.cu -o ej1_sol
+nvcc ./ej4.cu -o ej4_sol
 
-./ej1_sol secreto.txt
-# nvprof --metrics gld_efficiency,gst_efficiency ./ej1_sol
-# nvprof ./ej1_sol
+./ej4_sol secreto.txt
+# nvprof --metrics gld_efficiency,gst_efficiency ./ej4_sol
+# nvprof ./ej4_sol
