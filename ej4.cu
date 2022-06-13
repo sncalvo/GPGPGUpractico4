@@ -4,6 +4,8 @@
 #include "cuda.h"
 
 #define TSZ 32
+#define DATA_SIZE 128
+
 __global__ void sum_col_block(int *data, int length) {
 	__shared__ int sh_tile[TSZ][TSZ];
 
@@ -25,17 +27,20 @@ __global__ void sum_col_block(int *data, int length) {
 
 int main() {
 	int *data;
-	cudaMalloc(&data, sizeof(int)*TSZ*TSZ);
+	cudaMalloc(&data, sizeof(int)*DATA_SIZE*DATA_SIZE);
 
-	for (int i=0; i<TSZ*TSZ; i++)
+	for (int i=0; i<DATA_SIZE*DATA_SIZE; i++)
 		data[i]=i;
 
-	sum_col_block<<<TSZ/32, TSZ/32>>>(data, TSZ);
+	dim3 dimBlock(TSZ, TSZ);
+	dim3 dimGrid(DATA_SIZE/TSZ, DATA_SIZE/TSZ);
 
-	int *data_host;
-	cudaMemcpy(&data_host, data, sizeof(int)*TSZ*TSZ, cudaMemcpyDeviceToHost);
+	sum_col_block<<<dimGrid, dimBlock>>>(data, DATA_SIZE*DATA_SIZE);
 
-	for (int i=0; i<TSZ*TSZ; i++)
+	int *data_host = (int*)malloc(sizeof(int)*DATA_SIZE*DATA_SIZE);
+	cudaMemcpy(&data_host, data, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyDeviceToHost);
+
+	for (int i=0; i<DATA_SIZE*DATA_SIZE; i++)
 		printf("%d ", data[i]);
 
 	cudaFree(data);
