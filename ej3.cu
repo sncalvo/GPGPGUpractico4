@@ -2,7 +2,7 @@
 
 // se asume que el tamaño de perm es igual al del bloque
 // y que las premutaciones son válidas
-__global__ void block_perm(int * data, int *perm, int length){
+__global__ void block_perm(int *data, int *perm, int length) {
 	int off = blockIdx.x * blockDim.x;
 
 	if (length < off + threadIdx.x) return;
@@ -14,10 +14,10 @@ __global__ void block_perm(int * data, int *perm, int length){
 	perm_data = &data[off + &shared_pem];
 	__syncwarp();
 
-	data[off+threadIdx.x] = &perm_data;
+	data[off+threadIdx.x] = *perm_data;
 }
 
-__global__ void block_perm_org(int * data, int *perm, int length){
+__global__ void block_perm_org(int * data, int *perm, int length) {
 	int off = blockIdx.x * blockDim.x;
 
 	if (length < off+threadIdx.x) return;
@@ -26,7 +26,7 @@ __global__ void block_perm_org(int * data, int *perm, int length){
 
 	__syncthreads();
 
-	data[off+threadIdx.x]=perm_data;
+	data[off + threadIdx.x] = perm_data;
 }
 
 int main() {

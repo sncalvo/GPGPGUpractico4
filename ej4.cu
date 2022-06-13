@@ -4,7 +4,7 @@
 #include "cuda.h"
 
 #define TSZ 32
-__global__ void sum_col_block(int * data, int length) {
+__global__ void sum_col_block(int *data, int length) {
 	__shared__ int sh_tile[TSZ][TSZ];
 
 	int n = gridDim.x * blockDim.x;
@@ -15,16 +15,16 @@ __global__ void sum_col_block(int * data, int length) {
 
 	__syncthreads();
 
-	int col_sum=sh_tile[threadIdx.x][threadIdx.y];
+	int col_sum = sh_tile[threadIdx.x][threadIdx.y];
 
 	for (int i=16; i>0; i/=2)
-		col_sum+=__shfl_down_sync(0xFFFFFFFF, col_sum, i);
+		col_sum += __shfl_down_sync(0xFFFFFFFF, col_sum, i);
 
-	data[idy*n+idx]=col_sum;
+	data[idy*n+idx] = col_sum;
 }
 
 int main() {
-	int * data;
+	int *data;
 	cudaMalloc(&data, sizeof(int)*TSZ*TSZ);
 
 	for (int i=0; i<TSZ*TSZ; i++)
