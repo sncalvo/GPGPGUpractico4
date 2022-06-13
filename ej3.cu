@@ -11,7 +11,7 @@ __global__ void block_perm(int *data, int *perm, int length) {
 	shared_pem = &perm[threadIdx.x];
 	__syncwarp();
 	__shared__ int *perm_data;
-	perm_data = &data[off + &shared_pem];
+	perm_data = &data[off + *shared_pem];
 	__syncwarp();
 
 	data[off+threadIdx.x] = *perm_data;
@@ -31,7 +31,7 @@ __global__ void block_perm_org(int * data, int *perm, int length) {
 
 int main() {
 	int *data, *perm;
-	int length;
+	int length = 100;
 
 	cudaMalloc(&data, sizeof(int) * length);
 	cudaMalloc(&perm, sizeof(int) * length);
