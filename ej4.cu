@@ -36,9 +36,10 @@ int main() {
 	dim3 dimGrid(DATA_SIZE/TSZ, DATA_SIZE/TSZ);
 
 	sum_col_block<<<dimGrid, dimBlock>>>(data, DATA_SIZE*DATA_SIZE);
+	cudaDeviceSynchronize()
 
 	int *data_host = (int*)malloc(sizeof(int)*DATA_SIZE*DATA_SIZE);
-	cudaMemcpy(&data_host, data, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyDeviceToHost);
+	cudaMemcpy(data_host, data, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyDeviceToHost);
 
 	for (int i=0; i<DATA_SIZE*DATA_SIZE; i++)
 		printf("%d ", data[i]);
