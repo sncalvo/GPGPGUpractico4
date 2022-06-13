@@ -29,6 +29,8 @@ int main() {
 	int *data;
 	cudaMalloc((void **)&data, sizeof(int)*DATA_SIZE*DATA_SIZE);
 
+	printf("Has not failed 0 \n");
+	fflush(stdout);
 	for (int i=0; i<DATA_SIZE*DATA_SIZE; i++)
 		data[i]=i;
 
