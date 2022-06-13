@@ -7,8 +7,11 @@ __global__ void block_perm(int * data, int *perm, int length){
 
 	if (length < off + threadIdx.x) return;
 
-	__shared__ int *shared_pem = perm[threadIdx.x];
-	__shared__ int *perm_data = data[off + &shared_pem];
+	__shared__ int *shared_pem;
+	shared_pem = &perm[threadIdx.x];
+	__syncwarp();
+	__shared__ int *perm_data;
+	perm_data = &data[off + &shared_pem];
 	__syncwarp();
 
 	data[off+threadIdx.x] = &perm_data;
