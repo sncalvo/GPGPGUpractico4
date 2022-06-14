@@ -8,6 +8,12 @@
     "string_view": "cpp",
     "array": "cpp",
     "vector": "cpp",
-    "iterator": "cpp"
+    "iterator": "cpp",
+    "__hash_table": "cpp",
+    "__split_buffer": "cpp",
+    "bitset": "cpp",
+    "initializer_list": "cpp",
+    "unordered_map": "cpp",
+    "utility": "cpp"
   }
 }

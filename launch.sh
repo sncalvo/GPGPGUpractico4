@@ -29,13 +29,15 @@ echo 'Fin del programa 2'
 nvprof ./ej1_sol secreto.txt 256 1
 echo 'Fin del programa 3'
 
+nvprof ./ej1_sol secreto.txt 512 1
+echo 'Fin del programa 4'
+
+nvprof ./ej1_sol secreto.txt 1024 1
+echo 'Fin del programa 5'
+
+nvprof ./ej1_sol secreto.txt 2048 1
+echo 'Fin del programa 6'
+
 echo 'Fin de set 1'
 
 nvprof ./ej1_sol secreto.txt 64 0
-echo 'Fin del programa 1'
-
-nvprof ./ej1_sol secreto.txt 128 0
-echo 'Fin del programa 2'
-
-nvprof ./ej1_sol secreto.txt 256 0
-echo 'Fin del programa 3'
