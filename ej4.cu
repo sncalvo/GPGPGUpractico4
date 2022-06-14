@@ -57,6 +57,10 @@ int main() {
 	int *data;
 	cudaMalloc((void **)&data, sizeof(int)*DATA_SIZE*DATA_SIZE);
 
+	for (int i=0; i<DATA_SIZE; i++)
+		for (int j=0; j<DATA_SIZE; j++)
+			data_host[i*DATA_SIZE+j] = j;
+
 	printf("IN: \n");
 	for (int i=0; i<DATA_SIZE; i++) {
 		for (int j=0; j<DATA_SIZE; j++)
@@ -67,10 +71,6 @@ int main() {
 	printf("\n");
 
 	printf("================\n");
-
-	for (int i=0; i<DATA_SIZE; i++)
-		for (int j=0; j<DATA_SIZE; j++)
-			data_host[i*DATA_SIZE+j] = j;
 
 	cudaMemcpy(data, data_host, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyHostToDevice);
 
