@@ -151,8 +151,8 @@ int main(int argc, char *argv[])
 	unsigned int size;
 
 	const char *fname;
-	const int block_size;
-	const int variant;
+	int block_size = 0;
+	int variant = 0;
 
 	if (argc < 4) {
 		printf("Debe ingresar el nombre del archivo\n");

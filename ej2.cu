@@ -60,7 +60,7 @@ __global__ void calculate_sin(unsigned int num_points, Point2D *points, double *
 }
 
 int main(int argc, char *argv[]) {
-	const int num_points;
+	int num_points_2d;
 
 	if (argc < 4) {
 		printf("Debe ingresar la cantidad de puntos\n");
@@ -71,7 +71,6 @@ int main(int argc, char *argv[]) {
 
   // Builds square of points with space of SMALL_POINT_SIZE
   // unsigned int num_points_2d = trunc(SQUARE_LENGTH / SMALL_POINT_SIZE); // 6_280
-  int num_points_2d = num_points;
 
   size_t size_2d = num_points_2d * num_points_2d * sizeof(double); // 39_438_400 x double_size
 
@@ -115,7 +114,7 @@ int main(int argc, char *argv[]) {
   // print_matrix_of_points(special_sum_result, 64);
 
   free(special_sum_result);
-  CUDA_CHK(cudaFree(d_sin_result));
+  // CUDA_CHK(cudaFree(d_sin_result));
   CUDA_CHK(cudaFree(d_points_2d));
   CUDA_CHK(cudaFree(gpu_special_sum_result));
 
