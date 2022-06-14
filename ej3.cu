@@ -1,3 +1,7 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "cuda.h"
 
 // se asume que el tamaño de perm es igual al del bloque
