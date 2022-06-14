@@ -60,13 +60,13 @@ __global__ void calculate_sin(unsigned int num_points, Point2D *points, double *
 }
 
 int main(int argc, char *argv[]) {
-	int num_points_2d;
+	int num_points_2d = 0;
 
 	if (argc < 4) {
 		printf("Debe ingresar la cantidad de puntos\n");
 		return 0;
 	} else {
-		num_points = atoi(argv[1]);
+		num_points_2d = atoi(argv[1]);
 	}
 
   // Builds square of points with space of SMALL_POINT_SIZE
