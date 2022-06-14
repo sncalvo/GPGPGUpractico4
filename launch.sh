@@ -20,28 +20,22 @@ nvcc ./ej1.cu -o ej1_sol
 
 ./ej1_sol secreto.txt
 # nvprof --metrics gld_efficiency,gst_efficiency ./ej1_sol
-nvprof ./ej1_sol secreto.txt 128 1
+nvprof ./ej1_sol secreto.txt 64 1
 echo 'Fin del programa 1'
 
-nvprof ./ej1_sol secreto.txt 256 1
+nvprof ./ej1_sol secreto.txt 128 1
 echo 'Fin del programa 2'
 
-nvprof ./ej1_sol secreto.txt 512 1
-echo 'Fin del programa 3'
-
-nvprof ./ej1_sol secreto.txt 1024 1
+nvprof ./ej1_sol secreto.txt 256 1
 echo 'Fin del programa 3'
 
 echo 'Fin de set 1'
 
-nvprof ./ej1_sol secreto.txt 128 0
+nvprof ./ej1_sol secreto.txt 64 0
 echo 'Fin del programa 1'
 
-nvprof ./ej1_sol secreto.txt 256 0
+nvprof ./ej1_sol secreto.txt 128 0
 echo 'Fin del programa 2'
 
-nvprof ./ej1_sol secreto.txt 512 0
-echo 'Fin del programa 3'
-
-nvprof ./ej1_sol secreto.txt 1024 0
+nvprof ./ej1_sol secreto.txt 256 0
 echo 'Fin del programa 3'
