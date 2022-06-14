@@ -89,7 +89,7 @@ __global__ void count_occurences(int *d_message, int occurenses[M], int length)
 	}
 }
 
-int parte_2(int length, unsigned int size, int *message, int *occurenses)
+int parte_2(int length, unsigned int size, int *message, int *occurenses, int block_size, int variant)
 {
 	int *d_message;
 	cudaMalloc((void**)&d_message, length * sizeof(int));
@@ -99,13 +99,20 @@ int parte_2(int length, unsigned int size, int *message, int *occurenses)
 	cudaMalloc((void**)&d_occurenses, M * sizeof(int));
 	cudaMemset(d_occurenses, 0, M * sizeof(int));
 
-	dim3 block_dim(BLOCK_SIZE);
+	dim3 block_dim(block_size);
  	dim3 grid_dim(size / block_dim.x);
 
 	decrypt_kernel<<<grid_dim, block_dim>>>(d_message, length);
+	if (variant == 1)
+	{
+		grid_dim = dim3(length / (block_dim.x * BLOCK_PROCESS_SIZE));
+		shared_count_occurences<<<grid_dim, block_dim, block_size * BLOCK_PROCESS_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
+	}
+	else
+	{
+		count_occurences<<<grid_dim, block_dim>>>(d_message, d_occurenses, length);
+	}
 	// count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
-	grid_dim = dim3(length / (block_dim.x * BLOCK_PROCESS_SIZE));
-	shared_count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * BLOCK_PROCESS_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
 	CUDA_CHK(cudaGetLastError());
 
 	cudaMemcpy(message, d_message, size, cudaMemcpyDeviceToHost);
@@ -144,11 +151,16 @@ int main(int argc, char *argv[])
 	unsigned int size;
 
 	const char *fname;
+	const int block_size;
+	const int variant;
 
-	if (argc < 2) {
+	if (argc < 4) {
 		printf("Debe ingresar el nombre del archivo\n");
+		return 0;
 	} else {
 		fname = argv[1];
+		block_size = atoi(argv[2]);
+		variant = atoi(argv[3]);
 	}
 
 	int length = get_text_length(fname);
@@ -163,9 +175,8 @@ int main(int argc, char *argv[])
 
 	int *h_occurenses = (int *)malloc(M * sizeof(int));
 
-	parte_2(length, size, h_message, h_occurenses);
+	parte_2(length, size, h_message, h_occurenses, block_size, variant);
 
-	print_occurences(h_occurenses);
 	free(h_occurenses);
 
 	return 0;
