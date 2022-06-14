@@ -60,7 +60,7 @@ int main() {
 	dim3 dimBlock(TSZ, TSZ);
 	dim3 dimGrid(DATA_SIZE/TSZ, DATA_SIZE/TSZ);
 
-	sum_col_block<<<dimGrid, dimBlock>>>(data, DATA_SIZE*DATA_SIZE);
+	sum_col_block_opt<<<dimGrid, dimBlock>>>(data, DATA_SIZE*DATA_SIZE);
 	cudaDeviceSynchronize();
 	cudaMemcpy(data_host, data, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyDeviceToHost);
 
