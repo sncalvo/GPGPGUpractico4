@@ -62,10 +62,10 @@ int main(int argc, char *argv[]) {
   dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE, 1);
   dim3 grid_dim(num_points_2d / BLOCK_SIZE, num_points_2d / BLOCK_SIZE);
 
-  printf("block: %d x %d, grid: %d x %d\n", block_dim.x, block_dim.y, grid_dim.x, grid_dim.y);
+  // printf("block: %d x %d, grid: %d x %d\n", block_dim.x, block_dim.y, grid_dim.x, grid_dim.y);
 
   // Generates points
-  generator<<<grid_dim, block_dim>>>(num_points_2d * num_points_2d, d_points_2d);
+  generator<<<grid_dim, block_dim>>>(num_points_2d, d_points_2d);
   CUDA_CHK(cudaGetLastError());
   // CUDA_CHK(cudaDeviceSynchronize());
 
