@@ -8,17 +8,17 @@
 // y que las premutaciones son válidas
 __global__ void block_perm(int *data, int *perm, int length) {
 	int off = blockIdx.x * blockDim.x;
+	__shared__ int *shared_pem;
+	int perm_data;
 
 	if (length < off + threadIdx.x) return;
 
-	__shared__ int *shared_pem;
 	shared_pem = &perm[threadIdx.x];
 	__syncwarp();
-	__shared__ int *perm_data;
-	perm_data = &data[off + *shared_pem];
-	__syncwarp();
+	perm_data = data[off + *shared_pem];
+	__syncthreads();
 
-	data[off+threadIdx.x] = *perm_data;
+	data[off+threadIdx.x] = perm_data;
 }
 
 __global__ void block_perm_org(int * data, int *perm, int length) {
