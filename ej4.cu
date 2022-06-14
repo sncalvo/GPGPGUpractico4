@@ -41,7 +41,7 @@ __global__ void sum_col_block_opt(int *data, int length) {
 	for (int i=16; i>0; i/=2)
 	{
 		if (threadIdx.x + i < TSZ)
-			col_sum += sh_tile[threadIdx.x+i][threadIdx.y];
+			col_sum += sh_tile[threadIdx.x][threadIdx.y+i];
 	}
 
 	data[idy*n+idx] = col_sum;
