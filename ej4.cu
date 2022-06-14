@@ -22,7 +22,7 @@ __global__ void sum_col_block(int *data, int length) {
 	for (int i=16; i>0; i/=2)
 		col_sum += __shfl_down_sync(0xFFFFFFFF, col_sum, i);
 
-	data[idx*n+idy] = col_sum;
+	data[idy*n+idx] = col_sum;
 }
 
 __global__ void sum_col_block_opt(int *data, int length) {
