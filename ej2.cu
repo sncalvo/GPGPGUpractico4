@@ -28,8 +28,8 @@ __global__ void special_sum(unsigned int num_points, double *sum_result, int rad
     return;
   }
 
-  unsigned int threadIdx_x = threadIdx.x + 1;
-  unsigned int threadIdx_y = threadIdx.y + 1;
+  unsigned int threadIdx_x = threadIdx.x + 2;
+  unsigned int threadIdx_y = threadIdx.y + 2;
 
   matrix_point[threadIdx_y -1][threadIdx_x -1] = matrix[i * num_points + j];
   __syncwarp();
@@ -83,6 +83,8 @@ int main(int argc, char *argv[]) {
 
   // Generates points
   generator<<<grid_dim, block_dim>>>(num_points_2d * num_points_2d, d_points_2d);
+  CUDA_CHK(cudaGetLastError());
+  CUDA_CHK(cudaDeviceSynchronize());
 
   // // Generates points inside a square
   // generate_square<<<grid_dim, block_dim>>>(d_points_2d, num_points_2d);
