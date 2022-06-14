@@ -1,9 +1,9 @@
 #include "./common.h"
 #include "./generator.cuh"
 
-__global__ void generator(unsigned int num_points, double *points) {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
+__global__ void generator(int num_points, double *points) {
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+  int j = blockIdx.y * blockDim.y + threadIdx.y;
 
   if (i < num_points && j < num_points) {
     points[i * num_points + j] = i + j;
@@ -67,6 +67,7 @@ int main(int argc, char *argv[]) {
 		return 0;
 	} else {
 		num_points_2d = atoi(argv[1]);
+    printf("Launched with %d\n", num_points_2d);
 	}
 
   // Builds square of points with space of SMALL_POINT_SIZE
@@ -104,14 +105,14 @@ int main(int argc, char *argv[]) {
   // CUDA_CHK(cudaDeviceSynchronize());
 
   double *gpu_special_sum_result;
-  CUDA_CHK(cudaMalloc((void **)&gpu_special_sum_result, num_points_2d * num_points_2d * sizeof(double)));
+  CUDA_CHK(cudaMalloc((void **)&gpu_special_sum_result, size_2d));
 
   special_sum<<<grid_dim, block_dim>>>(num_points_2d, gpu_special_sum_result, 1, d_points_2d);
   CUDA_CHK(cudaGetLastError());
   CUDA_CHK(cudaDeviceSynchronize());
 
-  double *special_sum_result = (double *)malloc(num_points_2d * num_points_2d * sizeof(double));
-  CUDA_CHK(cudaMemcpy(special_sum_result, gpu_special_sum_result, num_points_2d * num_points_2d * sizeof(double), cudaMemcpyDeviceToHost));
+  double *special_sum_result = (double *)malloc(size_2d);
+  CUDA_CHK(cudaMemcpy(special_sum_result, gpu_special_sum_result, size_2d, cudaMemcpyDeviceToHost));
 
   // print_matrix_of_points(special_sum_result, 64);
 
