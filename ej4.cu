@@ -26,13 +26,17 @@ __global__ void sum_col_block(int *data, int length) {
 }
 
 int main() {
+	int *data_host = (int*)malloc(sizeof(int)*DATA_SIZE*DATA_SIZE);
 	int *data;
 	cudaMalloc((void **)&data, sizeof(int)*DATA_SIZE*DATA_SIZE);
 
+	for (int i=0; i<DATA_SIZE*DATA_SIZE; i++)
+		data_host[i]=i;
+
+	cudaMemcpy(data, data_host, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyHostToDevice);
+
 	printf("Has not failed 0 \n");
 	fflush(stdout);
-	for (int i=0; i<DATA_SIZE*DATA_SIZE; i++)
-		data[i]=i;
 
 	dim3 dimBlock(TSZ, TSZ);
 	dim3 dimGrid(DATA_SIZE/TSZ, DATA_SIZE/TSZ);
@@ -42,12 +46,10 @@ int main() {
 
 	sum_col_block<<<dimGrid, dimBlock>>>(data, DATA_SIZE*DATA_SIZE);
 	cudaDeviceSynchronize();
+	cudaMemcpy(data_host, data, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyDeviceToHost);
 
 	printf("Has not failed 2 \n");
 	fflush(stdout);
-
-	int *data_host = (int*)malloc(sizeof(int)*DATA_SIZE*DATA_SIZE);
-	cudaMemcpy(data_host, data, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyDeviceToHost);
 
 	printf("Has not failed 3 \n");
 	fflush(stdout);
