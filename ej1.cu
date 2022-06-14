@@ -66,7 +66,7 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 		int index = threadIdx.x * process_size + j;
 		__syncwarp();
 		int char_index = modulo(shared_message[index], M);
-		atomicAdd(local_occurenses[char_index], 1);
+		atomicAdd(&local_occurenses[char_index], 1);
 	}
 	__syncthreads();
 
@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 	unsigned int size;
 
 	const char *fname;
-	int block_size = 0;
+	int block_amount = 0;
 	int variant = 0;
 
 	if (argc < 4) {
