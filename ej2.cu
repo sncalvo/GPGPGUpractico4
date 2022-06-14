@@ -44,21 +44,6 @@ __global__ void special_sum(unsigned int num_points, double *sum_result, int rad
   sum_result[j + i * num_points] = result / SMALL_POINT_SIZE;
 }
 
-
-// calculate_sin: Calculates sin of x and y coordinates for points inside a square
-__global__ void calculate_sin(unsigned int num_points, Point2D *points, double *sin_result) {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-
-  __shared__ Point2D *point;
-  point = &points[j + i * num_points];
-
-  double x = point->x;
-  double y = point->y;
-
-  sin_result[j + i * num_points] = sin(x + y);
-}
-
 int main(int argc, char *argv[]) {
 	int num_points_2d = 0;
 
@@ -70,10 +55,7 @@ int main(int argc, char *argv[]) {
     printf("Launched with %d\n", num_points_2d);
 	}
 
-  // Builds square of points with space of SMALL_POINT_SIZE
-  // unsigned int num_points_2d = trunc(SQUARE_LENGTH / SMALL_POINT_SIZE); // 6_280
-
-  size_t size_2d = num_points_2d * num_points_2d * sizeof(double); // 39_438_400 x double_size
+  size_t size_2d = num_points_2d * num_points_2d * sizeof(double);
 
   double *d_points_2d;
   CUDA_CHK(cudaMalloc((void**)&d_points_2d, size_2d));
@@ -86,23 +68,6 @@ int main(int argc, char *argv[]) {
   generator<<<grid_dim, block_dim>>>(num_points_2d * num_points_2d, d_points_2d);
   CUDA_CHK(cudaGetLastError());
   CUDA_CHK(cudaDeviceSynchronize());
-
-  // // Generates points inside a square
-  // generate_square<<<grid_dim, block_dim>>>(d_points_2d, num_points_2d);
-  // CUDA_CHK(cudaGetLastError());
-
-  // CUDA_CHK(cudaDeviceSynchronize());
-
-  // // Point3D *points_3d = (Point3D *)malloc(num_points_3d * num_points_3d * num_points_3d * sizeof(Point3D));
-  // // CUDA_CHK(cudaMemcpy(points_3d, d_points_3d, num_points_3d * num_points_3d * num_points_3d * sizeof(Point3D), cudaMemcpyDeviceToHost));
-
-  // // Calculates sin of points
-  // double *d_sin_result;
-  // CUDA_CHK(cudaMalloc((void **)&d_sin_result, num_points_2d * num_points_2d * sizeof(double)));
-
-  // calculate_sin<<<grid_dim, block_dim>>>(num_points_2d, d_points_2d, d_sin_result);
-  // CUDA_CHK(cudaGetLastError());
-  // CUDA_CHK(cudaDeviceSynchronize());
 
   double *gpu_special_sum_result;
   CUDA_CHK(cudaMalloc((void **)&gpu_special_sum_result, size_2d));
@@ -117,7 +82,6 @@ int main(int argc, char *argv[]) {
   // print_matrix_of_points(special_sum_result, 64);
 
   free(special_sum_result);
-  // CUDA_CHK(cudaFree(d_sin_result));
   CUDA_CHK(cudaFree(d_points_2d));
   CUDA_CHK(cudaFree(gpu_special_sum_result));
 
