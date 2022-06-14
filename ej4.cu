@@ -13,11 +13,11 @@ __global__ void sum_col_block(int *data, int length) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	int idy = blockIdx.y * blockDim.y + threadIdx.y;
 
-	sh_tile[threadIdx.x][threadIdx.y] = data[idy*n+idx];
+	sh_tile[threadIdx.y][threadIdx.x] = data[idy*n+idx];
 
 	__syncthreads();
 
-	int col_sum = sh_tile[threadIdx.x][threadIdx.y];
+	int col_sum = sh_tile[threadIdx.y][threadIdx.x];
 
 	for (int i=16; i>0; i/=2)
 		col_sum += __shfl_down_sync(0xFFFFFFFF, col_sum, i);
