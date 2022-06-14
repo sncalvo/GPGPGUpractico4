@@ -103,9 +103,9 @@ int main(int argc, char *argv[]) {
   CUDA_CHK(cudaMalloc((void **)&gpu_special_sum_result, size_2d));
 
   if (variant == 0) {
-    special_sum_org<<<grid_dim, block_dim>>>(num_points_2d, gpu_special_sum_result, 1, d_points_2d);
+    special_sum_org<<<grid_dim, block_dim>>>(num_points_2d, gpu_special_sum_result, 2, d_points_2d);
   } else {
-    special_sum<<<grid_dim, block_dim>>>(num_points_2d, gpu_special_sum_result, 1, d_points_2d);
+    special_sum<<<grid_dim, block_dim>>>(num_points_2d, gpu_special_sum_result, 2, d_points_2d);
   }
   CUDA_CHK(cudaGetLastError());
   // CUDA_CHK(cudaDeviceSynchronize());
