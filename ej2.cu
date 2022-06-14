@@ -27,17 +27,47 @@ __global__ void special_sum(unsigned int num_points, double *sum_result, int rad
     return;
   }
 
-  unsigned int threadIdx_x = threadIdx.x + 2;
-  unsigned int threadIdx_y = threadIdx.y + 2;
+  unsigned int threadIdx_x = threadIdx.x + radius;
+  unsigned int threadIdx_y = threadIdx.y + radius;
 
-  matrix_point[threadIdx_y -1][threadIdx_x -1] = matrix[i * num_points + j];
-  __syncwarp();
+  matrix_point[threadIdx_y -radius][threadIdx_x -radius] = matrix[i * num_points + j];
+  __syncthreads();
 
   double result = -2 * radius * matrix_point[threadIdx_y][threadIdx_x];
 
   for (int offset = -radius; offset <= radius; offset++) {
-    result += matrix_point[threadIdx_y + offset][threadIdx_x];
-    result += matrix_point[threadIdx_y][threadIdx_x + offset];
+    if (threadIdx_x + offset >= 0 && threadIdx_x + offset < num_points) {
+      result += matrix_point[threadIdx_y][threadIdx_x + offset];
+    }
+    if (threadIdx_y + offset >= 0 && threadIdx_y + offset < num_points) {
+      result += matrix_point[threadIdx_y + offset][threadIdx_x];
+    }
+    // result += matrix_point[threadIdx_y + offset][threadIdx_x];
+    // result += matrix_point[threadIdx_y][threadIdx_x + offset];
+  }
+
+  sum_result[j + i * num_points] = result / SMALL_POINT_SIZE;
+}
+
+__global__ void special_sum_org(unsigned int num_points, double *sum_result, int radius, double *matrix) {
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+  int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+  double matrix_point[32][32];
+
+  if (i >= num_points || j >= num_points) {
+    return;
+  }
+
+  double result = -2 * radius * matrix[i * num_points + j];
+
+  for (int offset = -radius; offset <= radius; offset++) {
+    if (i + offset >= 0 && i + offset < num_points) {
+      result += matrix[(i + offset) * num_points + j];
+    }
+    if (j + offset >= 0 && j + offset < num_points) {
+      result += matrix[i * num_points + j + offset];
+    }
   }
 
   sum_result[j + i * num_points] = result / SMALL_POINT_SIZE;
@@ -45,12 +75,14 @@ __global__ void special_sum(unsigned int num_points, double *sum_result, int rad
 
 int main(int argc, char *argv[]) {
 	int num_points_2d = 0;
+  int variant = 0;
 
-	if (argc < 2) {
+	if (argc < 3) {
 		printf("Debe ingresar la cantidad de puntos\n");
 		return 0;
 	} else {
 		num_points_2d = atoi(argv[1]);
+    variant = atoi(argv[2]);
     printf("Launched with %d\n", num_points_2d);
 	}
 
@@ -72,7 +104,11 @@ int main(int argc, char *argv[]) {
   double *gpu_special_sum_result;
   CUDA_CHK(cudaMalloc((void **)&gpu_special_sum_result, size_2d));
 
-  special_sum<<<grid_dim, block_dim>>>(num_points_2d, gpu_special_sum_result, 1, d_points_2d);
+  if (variant == 0) {
+    special_sum_org<<<grid_dim, block_dim>>>(num_points_2d, gpu_special_sum_result, 1, d_points_2d);
+  } else {
+    special_sum<<<grid_dim, block_dim>>>(num_points_2d, gpu_special_sum_result, 1, d_points_2d);
+  }
   CUDA_CHK(cudaGetLastError());
   // CUDA_CHK(cudaDeviceSynchronize());
 
