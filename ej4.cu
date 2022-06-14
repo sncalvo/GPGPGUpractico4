@@ -4,7 +4,7 @@
 #include "cuda.h"
 
 #define TSZ 32
-#define DATA_SIZE 128
+#define DATA_SIZE 64
 
 __global__ void sum_col_block(int *data, int length) {
 	__shared__ int sh_tile[TSZ][TSZ];
@@ -34,7 +34,7 @@ __global__ void sum_col_block_opt(int *data, int length) {
 
 	sh_tile[threadIdx.y][threadIdx.x] = data[idy*n+idx];
 
-	__syncthreads();
+	__syncwarp();
 
 	int col_sum = sh_tile[threadIdx.x][threadIdx.y];
 
