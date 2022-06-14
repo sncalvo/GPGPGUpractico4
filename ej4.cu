@@ -82,8 +82,8 @@ int main() {
 	cudaMemcpy(data_host, data, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyDeviceToHost);
 
 	printf("RES: \n");
-	for (int i=0; i<DATA_SIZE; i++) {
 		for (int j=0; j<DATA_SIZE; j++)
+	for (int i=0; i<DATA_SIZE; i++) {
 			printf("%d ", data_host[i*DATA_SIZE+j]);
 
 		printf("\n");
