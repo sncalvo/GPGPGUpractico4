@@ -54,9 +54,6 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 	extern __shared__ int shared_message[]; // blockDim * BLOCK_PROCESS_SIZE * sizeof(int) bytes
 	__shared__ int local_occurenses[M]; // blockDim * sizeof(int) bytes
 
-	int index = threadIdx.x * process_size;
-	shared_message[index] = d_message[block];
-
 	for (int j = 0; j < process_size; j++)
 	{
 		if (j >= length) {
@@ -64,6 +61,7 @@ __global__ void shared_count_occurences(int *d_message, int occurenses[M], int l
 		}
 
 		int index = threadIdx.x * process_size + j;
+		shared_message[index] = d_message[block + j];
 		__syncwarp();
 		int char_index = modulo(shared_message[index], M);
 		atomicAdd(&local_occurenses[char_index], 1);
