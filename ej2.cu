@@ -62,7 +62,7 @@ __global__ void calculate_sin(unsigned int num_points, Point2D *points, double *
 int main(int argc, char *argv[]) {
 	int num_points_2d = 0;
 
-	if (argc < 4) {
+	if (argc < 2) {
 		printf("Debe ingresar la cantidad de puntos\n");
 		return 0;
 	} else {
