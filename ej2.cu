@@ -1,5 +1,4 @@
 #include "./common.h"
-#include "./generator.cuh"
 
 __global__ void generator(int num_points, double *points) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -60,9 +59,10 @@ int main(int argc, char *argv[]) {
   double *d_points_2d;
   CUDA_CHK(cudaMalloc((void**)&d_points_2d, size_2d));
 
-  // dim3 block_dim(32, 32, 1);
   dim3 block_dim(BLOCK_SIZE, BLOCK_SIZE, 1);
   dim3 grid_dim(num_points_2d / BLOCK_SIZE, num_points_2d / BLOCK_SIZE);
+
+  printf("block: %d x %d, grid: %d x %d\n", block_dim.x, block_dim.y, grid_dim.x, grid_dim.y);
 
   // Generates points
   generator<<<grid_dim, block_dim>>>(num_points_2d * num_points_2d, d_points_2d);
