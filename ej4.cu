@@ -53,7 +53,7 @@ int main() {
 	cudaMalloc((void **)&data, sizeof(int)*DATA_SIZE*DATA_SIZE);
 
 	for (int i=0; i<DATA_SIZE*DATA_SIZE; i++)
-		data_host[i]=i;
+		data_host[i] = 1;
 
 	cudaMemcpy(data, data_host, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyHostToDevice);
 
