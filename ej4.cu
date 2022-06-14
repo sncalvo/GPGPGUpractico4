@@ -35,27 +35,12 @@ int main() {
 
 	cudaMemcpy(data, data_host, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyHostToDevice);
 
-	printf("Has not failed 0 \n");
-	fflush(stdout);
-
 	dim3 dimBlock(TSZ, TSZ);
 	dim3 dimGrid(DATA_SIZE/TSZ, DATA_SIZE/TSZ);
-
-	printf("Has not failed 1 \n");
-	fflush(stdout);
 
 	sum_col_block<<<dimGrid, dimBlock>>>(data, DATA_SIZE*DATA_SIZE);
 	cudaDeviceSynchronize();
 	cudaMemcpy(data_host, data, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyDeviceToHost);
-
-	printf("Has not failed 2 \n");
-	fflush(stdout);
-
-	printf("Has not failed 3 \n");
-	fflush(stdout);
-
-	for (int i=0; i<DATA_SIZE*DATA_SIZE; i++)
-		printf("%d ", data_host[i]);
 
 	cudaFree(data);
 
