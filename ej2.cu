@@ -67,14 +67,14 @@ int main(int argc, char *argv[]) {
   // Generates points
   generator<<<grid_dim, block_dim>>>(num_points_2d * num_points_2d, d_points_2d);
   CUDA_CHK(cudaGetLastError());
-  CUDA_CHK(cudaDeviceSynchronize());
+  // CUDA_CHK(cudaDeviceSynchronize());
 
   double *gpu_special_sum_result;
   CUDA_CHK(cudaMalloc((void **)&gpu_special_sum_result, size_2d));
 
   special_sum<<<grid_dim, block_dim>>>(num_points_2d, gpu_special_sum_result, 1, d_points_2d);
   CUDA_CHK(cudaGetLastError());
-  CUDA_CHK(cudaDeviceSynchronize());
+  // CUDA_CHK(cudaDeviceSynchronize());
 
   double *special_sum_result = (double *)malloc(size_2d);
   CUDA_CHK(cudaMemcpy(special_sum_result, gpu_special_sum_result, size_2d, cudaMemcpyDeviceToHost));
