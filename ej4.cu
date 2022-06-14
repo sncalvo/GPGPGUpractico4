@@ -17,7 +17,7 @@ __global__ void sum_col_block(int *data, int length) {
 
 	__syncthreads();
 
-	int col_sum = sh_tile[threadIdx.y][threadIdx.x];
+	int col_sum = sh_tile[threadIdx.x][threadIdx.y];
 
 	for (int i=16; i>0; i/=2)
 		col_sum += __shfl_down_sync(0xFFFFFFFF, col_sum, i);
