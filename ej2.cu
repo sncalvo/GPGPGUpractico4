@@ -27,8 +27,8 @@ __global__ void special_sum(unsigned int num_points, double *sum_result, int rad
     return;
   }
 
-  unsigned int threadIdx_x = threadIdx.x + radius;
-  unsigned int threadIdx_y = threadIdx.y + radius;
+  int threadIdx_x = threadIdx.x + radius;
+  int threadIdx_y = threadIdx.y + radius;
 
   matrix_point[threadIdx_y -radius][threadIdx_x -radius] = matrix[i * num_points + j];
   __syncthreads();
@@ -52,8 +52,6 @@ __global__ void special_sum(unsigned int num_points, double *sum_result, int rad
 __global__ void special_sum_org(unsigned int num_points, double *sum_result, int radius, double *matrix) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   int j = blockIdx.y * blockDim.y + threadIdx.y;
-
-  double matrix_point[32][32];
 
   if (i >= num_points || j >= num_points) {
     return;
@@ -112,12 +110,12 @@ int main(int argc, char *argv[]) {
   CUDA_CHK(cudaGetLastError());
   // CUDA_CHK(cudaDeviceSynchronize());
 
-  double *special_sum_result = (double *)malloc(size_2d);
-  CUDA_CHK(cudaMemcpy(special_sum_result, gpu_special_sum_result, size_2d, cudaMemcpyDeviceToHost));
+  // double *special_sum_result = (double *)malloc(size_2d);
+  // CUDA_CHK(cudaMemcpy(special_sum_result, gpu_special_sum_result, size_2d, cudaMemcpyDeviceToHost));
 
   // print_matrix_of_points(special_sum_result, 64);
 
-  free(special_sum_result);
+  // free(special_sum_result);
   CUDA_CHK(cudaFree(d_points_2d));
   CUDA_CHK(cudaFree(gpu_special_sum_result));
 
