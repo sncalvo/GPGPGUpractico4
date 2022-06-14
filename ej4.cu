@@ -55,7 +55,7 @@ int main() {
 	fflush(stdout);
 
 	for (int i=0; i<DATA_SIZE*DATA_SIZE; i++)
-		printf("%d ", data[i]);
+		printf("%d ", data_host[i]);
 
 	cudaFree(data);
 
