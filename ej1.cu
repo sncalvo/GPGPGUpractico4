@@ -109,13 +109,16 @@ int parte_2(int length, unsigned int size, int *message, int *occurenses, int bl
 		block_dim = dim3(M);
 		grid_dim = dim3(block_amount);
 		shared_count_occurences<<<grid_dim, block_dim, M * process_size * sizeof(int)>>>(d_message, d_occurenses, length, process_size);
+		CUDA_CHK(cudaGetLastError());
+		CUDA_CHK(cudaDeviceSynchronize());
 	}
 	else
 	{
 		count_occurences<<<grid_dim, block_dim>>>(d_message, d_occurenses, length);
+		CUDA_CHK(cudaGetLastError());
+		CUDA_CHK(cudaDeviceSynchronize());
 	}
 	// count_occurences<<<grid_dim, block_dim, BLOCK_SIZE * sizeof(int)>>>(d_message, d_occurenses, length);
-	CUDA_CHK(cudaGetLastError());
 
 	cudaMemcpy(message, d_message, size, cudaMemcpyDeviceToHost);
 	cudaMemcpy(occurenses, d_occurenses, M * sizeof(int), cudaMemcpyDeviceToHost);
