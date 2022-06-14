@@ -38,6 +38,11 @@ __global__ void sum_col_block_opt(int *data, int length) {
 
 	int col_sum = sh_tile[threadIdx.x][threadIdx.y];
 
+	// for (int i=16; i>0; i/=2)
+	// {
+	// 	if (threadIdx.x + i < TSZ)
+	// 		col_sum += sh_tile[threadIdx.x][threadIdx.y+i];
+	// }
 	for (int i=16; i>0; i/=2)
 	{
 		if (threadIdx.x + i < TSZ)
@@ -52,8 +57,20 @@ int main() {
 	int *data;
 	cudaMalloc((void **)&data, sizeof(int)*DATA_SIZE*DATA_SIZE);
 
-	for (int i=0; i<DATA_SIZE*DATA_SIZE; i++)
-		data_host[i] = 1;
+	printf("IN: \n");
+	for (int i=0; i<DATA_SIZE; i++) {
+		for (int j=0; j<DATA_SIZE; j++)
+			printf("%d ", data_host[i*DATA_SIZE+j]);
+
+		printf("\n");
+	}
+	printf("\n");
+
+	printf("================\n");
+
+	for (int i=0; i<DATA_SIZE; i++)
+		for (int j=0; j<DATA_SIZE; j++)
+			data_host[i*DATA_SIZE+j] = j;
 
 	cudaMemcpy(data, data_host, sizeof(int)*DATA_SIZE*DATA_SIZE, cudaMemcpyHostToDevice);
 
