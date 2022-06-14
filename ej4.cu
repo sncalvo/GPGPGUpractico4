@@ -13,7 +13,7 @@ __global__ void sum_col_block(int *data, int length) {
 	int idx = blockIdx.x * blockDim.x + threadIdx.x;
 	int idy = blockIdx.y * blockDim.y + threadIdx.y;
 
-	sh_tile[threadIdx.y][threadIdx.x] = data[idy*n+idx];
+	sh_tile[threadIdx.x][threadIdx.y] = data[idy*n+idx];
 
 	__syncthreads();
 
