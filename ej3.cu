@@ -29,9 +29,17 @@ __global__ void block_perm_org(int * data, int *perm, int length) {
 	data[off + threadIdx.x] = perm_data;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
 	int *data, *perm;
-	int length = 100;
+
+	if (argc < 3) {
+		printf("Usage: %s <data_length> <variant>\n", argv[0]);
+		return 1;
+	}
+
+	int length = atoi(argv[1]);
+	length = length * length;
+	int variant = atoi(argv[2]);
 
 	cudaMalloc(&data, sizeof(int) * length);
 	cudaMalloc(&perm, sizeof(int) * length);
@@ -42,7 +50,11 @@ int main() {
 	dim3 dimBlock(256, 1, 1);
 	dim3 dimGrid(length / 256, 1, 1);
 
-	block_perm<<<dimGrid, dimBlock>>>(data, perm, length);
+	if (variant == 0) {
+		block_perm_org<<<dimGrid, dimBlock>>>(data, perm, length);
+	} else {
+		block_perm<<<dimGrid, dimBlock>>>(data, perm, length);
+	}
 
 	cudaFree(data);
 	cudaFree(perm);
