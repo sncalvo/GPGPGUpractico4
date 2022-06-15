@@ -19,6 +19,6 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
 nvcc ./ej4.cu -o ej4_sol
 
 # ./ej4_sol
-nvprof --metrics shared_efficiency --events shared_replay_overhead ./ej4_sol 0
+nvprof --metrics shared_efficiency ./ej4_sol 0
 echo 'End of 0 ============================='
-nvprof --metrics shared_efficiency --events shared_replay_overhead ./ej4_sol 1
+nvprof --metrics shared_efficiency ./ej4_sol 1

@@ -18,11 +18,11 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
 
 nvcc ./ej3.cu -o ej3_sol
 
-nvprof --metrics gld_efficiency,gst_efficiency,shared_efficiency,shared_replay_overhead ./ej3_sol 4096 0
-nvprof --metrics gld_efficiency,gst_efficiency,shared_efficiency,shared_replay_overhead ./ej3_sol 4096 1
+nvprof --metrics gld_efficiency,gst_efficiency,shared_efficiency ./ej3_sol 4096 0
+nvprof --metrics gld_efficiency,gst_efficiency,shared_efficiency ./ej3_sol 4096 1
 echo 'End of 4096 ============================='
-nvprof --metrics gld_efficiency,gst_efficiency,shared_efficiency,shared_replay_overhead ./ej3_sol 8192 0
-nvprof --metrics gld_efficiency,gst_efficiency,shared_efficiency,shared_replay_overhead ./ej3_sol 8192 1
+nvprof --metrics gld_efficiency,gst_efficiency,shared_efficiency ./ej3_sol 8192 0
+nvprof --metrics gld_efficiency,gst_efficiency,shared_efficiency ./ej3_sol 8192 1
 
 echo '============================='
 echo ''
