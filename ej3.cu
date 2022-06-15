@@ -4,12 +4,12 @@
 
 #include "cuda.h"
 
-__global__ void generator(int num_points, int *points) {
+__global__ void generator(int num_points, int *points, int max) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
 
   if (i < num_points) {
-		// Fills with random int
-    points[i] = i;
+		// sudo random generator on device
+    points[i] = max(i, max) >> 2 + i;
   }
 }
 
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
 	cudaMemset(data, 0, sizeof(int) * length);
 
 	// Fill perm with random int
-	generator<<<1, 256>>>(256, perm);
+	generator<<<1, 256>>>(256, perm, length);
 
 	dim3 dimBlock(256, 1, 1);
 	dim3 dimGrid(length / 256, 1, 1);
