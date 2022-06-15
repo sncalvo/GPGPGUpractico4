@@ -5,9 +5,11 @@
 #include "cuda.h"
 #include "curand.h"
 
-// generate for each thread pseudo random number between 0 and 1024
-__device__ int rand_thread() {
-	return rand() % 1024;
+// uint_to_int_conversion
+// transforms unsigned int to int between 0 and n - 1
+__global__ void uint_to_int_conversion(unsigned int *input, int *output, int n) {
+	int i = threadIdx.x + blockIdx.x * blockDim.x;
+	output[i] = input[i] % n;
 }
 
 // se asume que el tamaño de perm es igual al del bloque
@@ -38,6 +40,7 @@ __global__ void block_perm_org(int * data, int *perm, int length) {
 
 int main(int argc, char *argv[]) {
 	int *data, *perm;
+	unsigned int *uperm;
 
 	if (argc < 3) {
 		printf("Usage: %s <data_length> <variant>\n", argv[0]);
@@ -57,8 +60,10 @@ int main(int argc, char *argv[]) {
 	curandGenerator_t gen;
 	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT);
 	curandSetPseudoRandomGeneratorSeed(gen, time(NULL));
-	curandGeneratePoisson(gen, perm, 1024, 4.0);
+	curandGeneratePoisson(gen, uperm, 1024, 4.0);
 	curandDestroyGenerator(gen);
+
+	uint_to_int_conversion<<<1, 1024>>>(uperm, perm, 1024);
 
 	// Fill perm with random int
 	// generator<<<1, 1024>>>(1024, perm, length);
