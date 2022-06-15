@@ -12,7 +12,7 @@ __global__ void block_perm(int *data, int *perm, int length) {
 
 	if (length < off + threadIdx.x) return;
 
-	shared_data[threadIdx.x] = data[off];
+	shared_data[threadIdx.x] = data[off + threadIdx.x];
 	__syncthreads();
 
 	data[off+threadIdx.x] = shared_data[perm[threadIdx.x]];
