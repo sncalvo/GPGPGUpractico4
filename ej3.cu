@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
 	curandGenerator_t gen;
 	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT);
 	curandSetPseudoRandomGeneratorSeed(gen, time(NULL));
-	curandGenerateUniform(gen, perm, 1024);
+	curandGeneratePoisson(gen, perm, 1024, 4.0);
 	curandDestroyGenerator(gen);
 
 	// Fill perm with random int
