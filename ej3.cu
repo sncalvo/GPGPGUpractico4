@@ -3,6 +3,12 @@
 #include <stdlib.h>
 
 #include "cuda.h"
+#include "curand.h"
+
+// generate for each thread pseudo random number between 0 and 1024
+__device__ int rand_thread() {
+	return rand() % 1024;
+}
 
 // se asume que el tamaño de perm es igual al del bloque
 // y que las premutaciones son válidas
@@ -12,7 +18,7 @@ __global__ void block_perm(int *data, int *perm, int length) {
 
 	if (length < off + threadIdx.x) return;
 
-	shared_data[threadIdx.x] = data[off + threadIdx.x];
+	shared_data[threadIdx.x] = data[off];
 	__syncthreads();
 
 	data[off+threadIdx.x] = shared_data[perm[threadIdx.x]];
@@ -46,7 +52,13 @@ int main(int argc, char *argv[]) {
 	cudaMalloc(&perm, sizeof(int) * 1024);
 
 	cudaMemset(data, 0, sizeof(int) * length);
-	cudaMemset(perm, 0, sizeof(int) * 1024);
+	// cudaMemset(perm, 0, sizeof(int) * 1024);
+
+	curandGenerator_t gen;
+	curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_DEFAULT);
+	curandSetPseudoRandomGeneratorSeed(gen, time(NULL));
+	curandGenerateUniform(gen, perm, 1024);
+	curandDestroyGenerator(gen);
 
 	// Fill perm with random int
 	// generator<<<1, 1024>>>(1024, perm, length);
