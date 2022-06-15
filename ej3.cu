@@ -8,8 +8,8 @@
 // y que las premutaciones son válidas
 __global__ void block_perm(int *data, int *perm, int length) {
 	int off = blockIdx.x * blockDim.x;
-	__shared__ int shared_pem[32];
-	__shared__ int perm_data[32];
+	__shared__ int shared_pem[256];
+	__shared__ int perm_data[256];
 
 	if (length < off + threadIdx.x) return;
 
