@@ -27,7 +27,7 @@ __global__ void block_perm(int *data, int *perm, int length) {
 	shared_data[threadIdx.x] = data[off + perm[threadIdx.x]];
 	__syncthreads();
 
-	data[off+threadIdx.x] = shared_data[shared_perm[threadIdx.x]];
+	data[off+threadIdx.x] = shared_data[threadIdx.x];
 }
 
 __global__ void block_perm_org(int * data, int *perm, int length) {
