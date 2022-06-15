@@ -38,6 +38,33 @@ echo 'Fin del programa 5'
 nvprof ./ej1_sol secreto.txt 2048 1
 echo 'Fin del programa 6'
 
+
+echo '=================================='
+echo ''
+echo ''
+echo ''
+nvprof --metrics atomic_transactions ./ej1_sol secreto.txt 64 1
+echo 'Fin del programa 1'
+
+nvprof --metrics atomic_transactions ./ej1_sol secreto.txt 128 1
+echo 'Fin del programa 2'
+
+nvprof --metrics atomic_transactions ./ej1_sol secreto.txt 256 1
+echo 'Fin del programa 3'
+
+nvprof --metrics atomic_transactions ./ej1_sol secreto.txt 512 1
+echo 'Fin del programa 4'
+
+nvprof --metrics atomic_transactions ./ej1_sol secreto.txt 1024 1
+echo 'Fin del programa 5'
+
+nvprof --metrics atomic_transactions ./ej1_sol secreto.txt 2048 1
+echo 'Fin del programa 6'
+
+echo '=================================='
+echo ''
+echo ''
+echo ''
 echo 'Fin de set 1'
 
 nvprof ./ej1_sol secreto.txt 64 0
