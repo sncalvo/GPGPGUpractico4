@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 	int variant = atoi(argv[2]);
 
 	cudaMalloc(&data, sizeof(int) * length);
-	cudaMalloc(&perm, sizeof(int) * 1024);
+	cudaMalloc(&d_perm, sizeof(int) * 1024);
 
 	cudaMemset(data, 0, sizeof(int) * length);
 	// copy perm to device d_perm
