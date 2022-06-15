@@ -31,14 +31,14 @@ __global__ void block_perm_org(int * data, int *perm, int length) {
 }
 
 int main(int argc, char *argv[]) {
-	int *data, *perm, *d_perm;
+	int *data, *perm;
 
 	if (argc < 3) {
 		printf("Usage: %s <data_length> <variant>\n", argv[0]);
 		return 1;
 	}
 
-	d_perm = (int *)malloc(sizeof(int) * 1024);
+	int *d_perm = (int *)malloc(sizeof(int) * 1024);
 	// generate random number between 0 and 1023
 	for (int i = 0; i < 1024; i++) {
 		d_perm[i] = rand() % 1024;
@@ -55,6 +55,7 @@ int main(int argc, char *argv[]) {
 	// copy perm to device d_perm
 	cudaMemcpy(d_perm, perm, sizeof(int) * 1024, cudaMemcpyHostToDevice);
 
+	return 0;
 	// Fill perm with random int
 	// generator<<<1, 1024>>>(1024, perm, length);
 
