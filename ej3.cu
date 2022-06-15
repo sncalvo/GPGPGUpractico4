@@ -18,16 +18,16 @@ __global__ void generator(int num_points, int *points, int max) {
 // y que las premutaciones son válidas
 __global__ void block_perm(int *data, int *perm, int length) {
 	int off = blockIdx.x * blockDim.x;
-	__shared__ int shared_pem[256];
-	__shared__ int shared_data[256];
+	// int shared_pem;
+	__shared__ int shared_data[1024];
 
 	if (length < off + threadIdx.x) return;
 
-	shared_pem[threadIdx.x] = perm[threadIdx.x];
-	shared_data[threadIdx.x] = data[off];
+	// shared_pem[threadIdx.x] = perm[threadIdx.x];
+	shared_data[threadIdx.x] = data[off + threadIdx.x];
 	__syncthreads();
 
-	data[off+threadIdx.x] = shared_data[threadIdx.x + shared_pem[threadIdx.x]];
+	data[off+threadIdx.x] = shared_data[perm[threadIdx.x]];
 }
 
 __global__ void block_perm_org(int * data, int *perm, int length) {
@@ -55,15 +55,15 @@ int main(int argc, char *argv[]) {
 	int variant = atoi(argv[2]);
 
 	cudaMalloc(&data, sizeof(int) * length);
-	cudaMalloc(&perm, sizeof(int) * 256);
+	cudaMalloc(&perm, sizeof(int) * 1024);
 
 	cudaMemset(data, 0, sizeof(int) * length);
 
 	// Fill perm with random int
-	generator<<<1, 256>>>(256, perm, length);
+	generator<<<1, 1024>>>(1024, perm, length);
 
-	dim3 dimBlock(256, 1, 1);
-	dim3 dimGrid(length / 256, 1, 1);
+	dim3 dimBlock(1024, 1, 1);
+	dim3 dimGrid(length / 1024, 1, 1);
 
 	if (variant == 0) {
 		block_perm_org<<<dimGrid, dimBlock>>>(data, perm, length);
