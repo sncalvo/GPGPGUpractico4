@@ -4,6 +4,17 @@
 
 #include "cuda.h"
 
+__global__ void generator(int num_points, int *points) {
+  int i = blockIdx.x * blockDim.x + threadIdx.x;
+  int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+  if (i < num_points && j < num_points) {
+		// Fills with random int
+    points[i * num_points + j] = rand();
+  }
+}
+
+
 // se asume que el tamaño de perm es igual al del bloque
 // y que las premutaciones son válidas
 __global__ void block_perm(int *data, int *perm, int length) {
@@ -46,10 +57,12 @@ int main(int argc, char *argv[]) {
 	int variant = atoi(argv[2]);
 
 	cudaMalloc(&data, sizeof(int) * length);
-	cudaMalloc(&perm, sizeof(int) * length);
+	cudaMalloc(&perm, sizeof(int) * 256);
 
 	cudaMemset(data, 0, sizeof(int) * length);
-	cudaMemset(perm, 0, sizeof(int) * length);
+
+	// Fill perm with random int
+	generator<<<1, 256>>>(256, perm);
 
 	dim3 dimBlock(256, 1, 1);
 	dim3 dimGrid(length / 256, 1, 1);
