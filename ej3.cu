@@ -4,43 +4,12 @@
 
 #include "cuda.h"
 
-__constant__ unsigned int shift1[4] = {6, 2, 13, 3};
-
-__constant__ unsigned int shift2[4] = {13, 27, 21, 12};
-
-__constant__ unsigned int shift3[4] = {18, 2, 7, 13};
-
-__constant__ unsigned int offset[4] = {4294967294, 4294967288, 4294967280, 4294967168};
-
-__shared__ unsigned int randStates[32];
-
-__device__ unsigned int TausStep(unsigned int &z, int S1, int S2, int S3, unsigned int M)
-
-{
-
-	unsigned int b = (((z << S1) ^ z) >> S2);
-
-	return z = (((z &M) << S3) ^ b);
-
-}
-
-__device__ unsigned int randInt()
-
-{
-
-	TausStep(randStates[threadIdx.x&31], shift1[threadIdx.x&3], shift2[threadIdx.x&3],shift3[threadIdx.x&3],offset[threadIdx.x&3]);
-
-	return (randStates[(threadIdx.x)&31]^randStates[(threadIdx.x+1)&31]^randStates[(threadIdx.x+2)&31]^randStates[(threadIdx.x+3)&31]);
-
-}
-
 __global__ void generator(int num_points, int *points) {
   int i = blockIdx.x * blockDim.x + threadIdx.x;
-  int j = blockIdx.y * blockDim.y + threadIdx.y;
 
-  if (i < num_points && j < num_points) {
+  if (i < num_points) {
 		// Fills with random int
-    points[i * num_points + j] = randInt();
+    points[i] = i;
   }
 }
 
