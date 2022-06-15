@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 	d_perm = (int *)malloc(sizeof(int) * 1024);
 	// generate random number between 0 and 1023
 	for (int i = 0; i < 1024; i++) {
-		perm[i] = rand() % 1024;
+		d_perm[i] = rand() % 1024;
 	}
 
 	int length = atoi(argv[1]);
