@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	perm = (int *)malloc(sizeof(int) * 1024);
+	d_perm = (int *)malloc(sizeof(int) * 1024);
 	// generate random number between 0 and 1023
 	for (int i = 0; i < 1024; i++) {
 		perm[i] = rand() % 1024;
