@@ -19,16 +19,16 @@ __global__ void generator(int num_points, int *points, int max) {
 __global__ void block_perm(int *data, int *perm, int length) {
 	int off = blockIdx.x * blockDim.x;
 	__shared__ int shared_pem[256];
-	__shared__ int perm_data[256];
+	__shared__ int shared_data[256];
 
 	if (length < off + threadIdx.x) return;
 
 	shared_pem[threadIdx.x] = perm[threadIdx.x];
 	__syncwarp();
-	perm_data[threadIdx.x] = data[off + shared_pem[threadIdx.x]];
+	shared_data[threadIdx.x] = data[off];
 	__syncthreads();
 
-	data[off+threadIdx.x] = perm_data[threadIdx.x];
+	data[off+threadIdx.x] = shared_data[threadIdx.x + shared_pem[threadIdx.x]];
 }
 
 __global__ void block_perm_org(int * data, int *perm, int length) {
